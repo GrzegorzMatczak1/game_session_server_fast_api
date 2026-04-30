@@ -1,13 +1,13 @@
 # Game Session Server — Preliminary Design Document
 
 > **Status:** Early draft — mechanics are still being refined.  
-> **Stack:** FastAPI · plain JSON file · CLI/Web Dashboard
+> **Stack:** FastAPI · plain JSON file · PHP/Web Dashboard
 
 ---
 
 ## 1. Concept Overview
 
-A real-time, round-based **single-player** game where one player fights waves of enemies and increasingly tough bosses. The game runs entirely through a FastAPI backend; state is persisted in a JSON file. A separate dashboard app (CLI or web frontend, e.g. Matplotlib-powered) visualises live stats.
+A real-time, round-based **single-player** game where one player fights waves of enemies and increasingly tough bosses. The game runs entirely through a FastAPI backend; state is persisted in a JSON file. A separate dashboard app (simple HTML + CSS + PHP web client display) visualises live stats.
 
 ---
 
@@ -17,12 +17,12 @@ A real-time, round-based **single-player** game where one player fights waves of
 [Match starts]
     │
     ▼
-Every tick:
+Every turn:
   ├─ Player gains +1 mana
   └─ Player regenerates +1 HP  (unless regen is paused — see §4)
     │
     ▼
-Every 5 ticks:
+Every 5 turns:
   ├─ Player may attack the current enemy  (costs mana)
   └─ Current enemy auto-attacks the player
     │
@@ -54,7 +54,7 @@ Characters are created and deleted via the API (see §6). Stats can be upgraded 
 ## 4. Mana & Combat
 
 ### Mana
-- The player accumulates **+1 mana per tick** automatically.
+- The player accumulates **+1 mana per turn** automatically.
 - Mana is spent on two actions:
 
 | Action | Effect |
@@ -63,12 +63,12 @@ Characters are created and deleted via the API (see §6). Stats can be upgraded 
 | Upgrade stat | Increase one stat by 1 (see `update_stats` in §6) |
 
 ### HP Regeneration & Regen Pause
-- Base regen: **+1 HP per tick**.
-- After **receiving** damage → player's regen is paused for **1 ticks**.
-- After **dealing** damage → player's regen is paused for **2 ticks**.
+- Base regen: **+1 HP per turn**.
+- After **receiving** damage → player's regen is paused for **1 turns**.
+- After **dealing** damage → player's regen is paused for **2 turns**.
 
 ### Attack Timing
-- Both the player and the enemy can only attack **once every 1 ticks**.
+- Both the player and the enemy can only attack **once every 1 turns**.
 - The player can attack anytime (attack costs mana); the enemy's attack is automatic.
 
 ---
@@ -119,7 +119,7 @@ All endpoints are served by the **Game Session Server** (FastAPI).
 | Method | Path | Description |
 |--------|------|-------------|
 | `POST` | `/startMatch` | Initialise a new match session, reset round counter, spawn initial enemies. **Async.** |
-| `POST` | `/updateMatch` | Process a single tick — awards mana, applies regen, triggers attacks on every 5th tick, and saves state. **Async.** |
+| `POST` | `/updateMatch` | Process a single turn — awards mana, applies regen, triggers attacks on every 5th turn, and saves state. **Async.** |
 
 ### Character Management
 
@@ -135,7 +135,7 @@ All endpoints are served by the **Game Session Server** (FastAPI).
 |---|---|
 | `1` | HP +1 |
 | `2` | Attack +1 |
-| … | … (TBD) |
+| `3` | Mana +1 |
 
 > **Note:** The exact request/response schemas (field names, auth, validation rules) are to be defined in the next iteration.
 
@@ -151,12 +151,13 @@ All endpoints are served by the **Game Session Server** (FastAPI).
 
 ## 9. Game Session Dashboard
 
-A companion app (implementation TBD) that reads from the database and visualises:
+A companion app that reads from the database and connects with FastAPI that visualises:
 
 - Live player stats (HP, mana, attack)
 - Round number & boss status
 - Kill feed / event log
+- Player interface to interract with the game
 
-### Implementation: **Backend CLI** using Python + Matplotlib (quick to build, good for dev/testing)
+### Implementation: **HTML + CSS + PHP** front-end client for game logic visualisation and user interraction implementation.
 
-**The game statistics and all necessary content for user to interract with will be displayed to using Matlotlib python library.**
+
