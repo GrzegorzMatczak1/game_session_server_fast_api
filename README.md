@@ -69,7 +69,7 @@ Characters are created and deleted via the API (see §6). Stats can be upgraded 
 
 ### Attack Timing
 - Both the player and the enemy can only attack **once every 5 ticks**.
-- The player's attack is optional (costs mana); the enemy's attack is automatic.
+- The player can attack anytime (attack costs mana); the enemy's attack is automatic.
 
 ---
 
