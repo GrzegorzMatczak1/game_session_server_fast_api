@@ -1,13 +1,13 @@
 # Game Session Server — Preliminary Design Document
 
 > **Status:** Early draft — mechanics are still being refined.  
-> **Stack:** FastAPI · Firebase (or any JSON-capable DB) · CLI/Web Dashboard
+> **Stack:** FastAPI · plain JSON file · CLI/Web Dashboard
 
 ---
 
 ## 1. Concept Overview
 
-A real-time, round-based **single-player** game where one player fights waves of enemies and increasingly tough bosses. The game runs entirely through a FastAPI backend; state is persisted in a JSON-friendly database (e.g. Firebase). A separate dashboard app (CLI or web frontend, e.g. Matplotlib-powered) visualises live stats.
+A real-time, round-based **single-player** game where one player fights waves of enemies and increasingly tough bosses. The game runs entirely through a FastAPI backend; state is persisted in a JSON file. A separate dashboard app (CLI or web frontend, e.g. Matplotlib-powered) visualises live stats.
 
 ---
 
@@ -125,7 +125,7 @@ All endpoints are served by the **Game Session Server** (FastAPI).
 |---|---|
 | `1` | HP +1 |
 | `2` | Attack +1 |
-| … | … (to be extended) |
+| … | … (TBD) |
 
 > **Note:** The exact request/response schemas (field names, auth, validation rules) are to be defined in the next iteration.
 
@@ -133,9 +133,8 @@ All endpoints are served by the **Game Session Server** (FastAPI).
 
 ## 7. Data Persistence
 
-- All game state is saved in **JSON format** to the database after every meaningful state change — including after each round ends.
+- All game state is saved in **JSON format** to the database after defeaating an enemy.
 - The fields persisted between rounds are: `hp`, `attack`, `current_round`, and `current_enemy` (see §5).
-- Suggested DB: **Firebase Realtime Database** or Firestore — both expose a REST interface that pairs naturally with FastAPI async handlers.
 - On Game Over (`hp <= 0`), the final state snapshot is preserved for the dashboard to read.
 
 ---
@@ -163,3 +162,4 @@ Implementation options:
 - [ ] Finalise request/response schemas for all endpoints
 - [ ] Choose dashboard tech (CLI vs. web)
 - [ ] Define exact enemy base stats and how `current_enemy` is pre-calculated and stored
+- [ ] Allow 2 separate players to play the game separatly at the same time
