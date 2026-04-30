@@ -64,16 +64,16 @@ Characters are created and deleted via the API (see §6). Stats can be upgraded 
 
 ### HP Regeneration & Regen Pause
 - Base regen: **+1 HP per tick**.
-- After **receiving** damage → player's regen is paused for **5 ticks**.
+- After **receiving** damage → player's regen is paused for **1 ticks**.
 - After **dealing** damage → player's regen is paused for **2 ticks**.
 
 ### Attack Timing
-- Both the player and the enemy can only attack **once every 5 ticks**.
+- Both the player and the enemy can only attack **once every 1 ticks**.
 - The player can attack anytime (attack costs mana); the enemy's attack is automatic.
 
 ---
 
-## 5. Rounds & Boss Encounters
+## 1. Rounds & Boss Encounters
 
 - The **round counter** increments by 1 each time an enemy is killed.
 - When `round % 10 == 0` → a **Boss** spawns.
@@ -100,7 +100,17 @@ This means the player keeps any HP and stat upgrades accumulated so far — ther
 
 ---
 
-## 6. API Endpoints
+## 6. Data Management
+
+All game data will be saved and read from **JSON** architecture. The data will be split into:
+
+ - enemy.json: Data related to enemies and their stats(hp, dmg)
+ - player.json: Data related to the player. Stores only base stats for the player(hp, dmg, mana)
+ - round.json: Data related to the current round information. Base entity stats from other files are modified by the multipliers based on the current round.
+
+---
+
+## 7. API Endpoints
 
 All endpoints are served by the **Game Session Server** (FastAPI).
 
@@ -131,7 +141,7 @@ All endpoints are served by the **Game Session Server** (FastAPI).
 
 ---
 
-## 7. Data Persistence
+## 8. Data Persistence
 
 - All game state is saved in **JSON format** to the database after defeaating an enemy.
 - The fields persisted between rounds are: `hp`, `attack`, `current_round`, and `current_enemy` (see §5).
@@ -139,7 +149,7 @@ All endpoints are served by the **Game Session Server** (FastAPI).
 
 ---
 
-## 8. Game Session Dashboard
+## 9. Game Session Dashboard
 
 A companion app (implementation TBD) that reads from the database and visualises:
 
@@ -147,19 +157,6 @@ A companion app (implementation TBD) that reads from the database and visualises
 - Round number & boss status
 - Kill feed / event log
 
-Implementation options:
-- **Backend CLI** using Python + Matplotlib (quick to build, good for dev/testing)
-- **Frontend web app** (React, etc.) for a richer UI
+### Implementation: **Backend CLI** using Python + Matplotlib (quick to build, good for dev/testing)
 
----
-
-## 9. Open Questions / Next Steps
-
-- [ ] Define exact mana costs per action (attack vs. upgrade)
-- [ ] Define base stats for characters and NPCs
-- [ ] Define boss unique mechanics (beyond stat scaling)
-- [ ] Decide on auth strategy (sessions, tokens?)
-- [ ] Finalise request/response schemas for all endpoints
-- [ ] Choose dashboard tech (CLI vs. web)
-- [ ] Define exact enemy base stats and how `current_enemy` is pre-calculated and stored
-- [ ] Allow 2 separate players to play the game separatly at the same time
+**The game statistics and all necessary content for user to interract with will be displayed to using Matlotlib python library.**
