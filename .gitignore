@@ -1,0 +1,9 @@
+# Python
+backend/venv/
+backend/__pycache__/
+*.pyc
+*.pyo
+
+# System
+.DS_Store
+Thumbs.db

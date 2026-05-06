@@ -1,0 +1,18 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  text-align: center;
+  padding: 40px;
+}
+
+.status {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.status.ok   { background: #1a472a; border: 1px solid #2ecc71; }
+.status.fail { background: #4a1a1a; border: 1px solid #e74c3c; }
