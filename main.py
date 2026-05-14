@@ -33,18 +33,20 @@ class Match_Handler:
         filep.close()
     
     def save_enemy_data(self):
-        enemy_list_temp = []
+        temp_enemy_list = []
+
+        for e in self.enemy_list:
+            temp_enemy_list.append(e.model_dump())
+
         with open("json_files/enemies.json", "w") as filee:
-            for e in self.enemy_list:
-                enemy_list_temp.append(e.model_dump())
             
-            print(enemy_list_temp)
-            json.dump(enemy_list_temp, filee, indent=4)
+            json.dump(temp_enemy_list, filee, indent=4)
 
         filee.close()
 
+
     def save_match_data(self):
-        with open("json_files/matches_into.json", "w") as filem:
+        with open("json_files/match_info.json", "w") as filem:
             json.dump(self.current_match.model_dump(), filem, indent=4)
 
         filem.close()
@@ -66,7 +68,7 @@ class Match_Handler:
 
         filee.close()
 
-        with open("json_files/match_into.json", "w") as filem:
+        with open("json_files/match_info.json", "w") as filem:
             json.dump(self.current_match.model_dump(), filem, indent=4)
 
         filem.close()
@@ -115,7 +117,7 @@ async def app_add_player(player: Player):
 async def app_get_player():
     return match_handle_object.current_player.model_dump()
 
-@app.post("enemy/add")
+@app.post("/enemy/add")
 async def app_add_enemy(enemy: Enemy):
     match_handle_object.add_enemy(enemy)
     return enemy
