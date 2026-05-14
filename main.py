@@ -141,7 +141,10 @@ async def app_get_match():
 
 # endpoints to do
 
-# progres round / generates new enemy, resets turns, saves game data
+# progres round / generates new enemy, resets turns, saves game data, resets player save state when he lost
 
-# proges turn(player_attacked: bool) / 1 apply player
+# proges turn(player_attacked: bool) / 1 apply player damage, 2 check if enemy can attack if yes attack the player, apply player mana and or regenerate hp
 
+# upgrade player stats(stat_index: int) / stat_index = 1 -> hp++ && current_hp++, stat_index = 2 -> attack++ / player chose to upgrade these stats
+
+# update player state(stat_index: int, ammount: int) / stat_index = 1 -> current_hp + ammount...
