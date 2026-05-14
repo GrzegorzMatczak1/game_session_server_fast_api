@@ -9,9 +9,11 @@ app = FastAPI()
 class Match_Handler:
     def __init__(self):
         self.current_player: Player
-        self.enemy_list: List[Enemy] = []
-        self.enemy_id_list: List[int]
+        self.current_enemy: Enemy
         self.current_match: Match
+        self.turn: int
+        self.enemy_list: List[Enemy] = []
+        
 
     def add_player(self, new_player: Player):
         self.current_player = new_player
@@ -43,7 +45,6 @@ class Match_Handler:
             json.dump(temp_enemy_list, filee, indent=4)
 
         filee.close()
-
 
     def save_match_data(self):
         with open("json_files/match_info.json", "w") as filem:
@@ -137,3 +138,10 @@ async def app_add_match(match: Match):
 @app.post("/match/get")
 async def app_get_match():
     return match_handle_object.current_match.model_dump()
+
+# endpoints to do
+
+# progres round / generates new enemy, resets turns, saves game data
+
+# proges turn(player_attacked: bool) / 1 apply player
+
