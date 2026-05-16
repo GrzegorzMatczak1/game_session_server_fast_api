@@ -1,0 +1,8 @@
+{
+    "player_id": 1,
+    "username": "test",
+    "player_base_hp": 10,
+    "Player_current_hp": 0,
+    "player_attack": 1,
+    "mana": 0
+}

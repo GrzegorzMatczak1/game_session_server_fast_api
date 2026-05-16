@@ -1,0 +1,23 @@
+[
+    {
+        "enemy_id": 0,
+        "enemy_name": "test",
+        "enemy_base_hp": 10,
+        "enemy_current_hp": 0,
+        "enemy_attack": 1
+    },
+    {
+        "enemy_id": 1,
+        "enemy_name": "test2",
+        "enemy_base_hp": 10,
+        "enemy_current_hp": 0,
+        "enemy_attack": 1
+    },
+    {
+        "enemy_id": 2,
+        "enemy_name": "string",
+        "enemy_base_hp": 10,
+        "enemy_current_hp": 0,
+        "enemy_attack": 1
+    }
+]
