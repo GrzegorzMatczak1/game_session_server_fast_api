@@ -1,13 +1,8 @@
 # Game Session Server — Preliminary Design Document
 
-> **Status:** Early draft — mechanics are still being refined.  
-> **Stack:** FastAPI · plain JSON file · PHP/Web Dashboard
-
----
-
 ## 1. Concept Overview
 
-A real-time, round-based **single-player** game where one player fights waves of enemies and increasingly tough bosses. The game runs entirely through a FastAPI backend; state is persisted in a JSON file. A separate dashboard app (simple HTML + CSS + PHP web client display) visualises live stats.
+A real-time, round-based **single-player** game where one player fights waves of enemies and increasingly tough bosses. The game runs entirely through a FastAPI backend; state is persisted in a JSON file. A separate dashboard app (Typescript React web client display) visualises live stats.
 
 ---
 
@@ -158,6 +153,6 @@ A companion app that reads from the database and connects with FastAPI that visu
 - Kill feed / event log
 - Player interface to interract with the game
 
-### Implementation: **HTML + CSS + PHP** front-end client for game logic visualisation and user interraction implementation.
+### Implementation: **Vite React Typescript** front-end client for game logic visualisation and user interraction implementation.
 
 
