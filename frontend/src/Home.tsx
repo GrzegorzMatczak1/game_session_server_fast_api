@@ -14,11 +14,10 @@ function Home() {
   return (
     <div className="home-wrapper">
       <div className="home-card">
-        <span className="home-card__eyebrow">Browser Game</span>
 
         <div>
           <h1 className="home-card__title">Welcome</h1>
-          <h4 className="home-card__subtitle">Sign in to continue</h4>
+          <h4 className="home-card__subtitle">Enter a username to continue</h4>
         </div>
 
         <div className="home-form">
