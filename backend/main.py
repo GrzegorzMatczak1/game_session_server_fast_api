@@ -1,10 +1,17 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from models import Player, Enemy, Match
 from typing import List
 import json
 
-
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Match_Handler:
     def __init__(self):
@@ -106,6 +113,10 @@ class Match_Handler:
 match_handle_object = Match_Handler()
 match_handle_object.load_data()
 
+# a test endpoint to check whether the fast api server is running properly
+@app.get("/api/health")
+def health():
+    return {"status": "ok", "message": "Backend is running"}
 
 #these are test endpoints. They are used to check the fast api app connection with the json database
 @app.post("/player/add")
