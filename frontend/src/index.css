@@ -1,0 +1,64 @@
+/* ───────────────────────────────────────────
+   index.css  –  shared variables & reset
+─────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+:root {
+  /* Palette */
+  --color-bg:        #0d0f12;
+  --color-surface:   #13171d;
+  --color-border:    #2a2f3a;
+  --color-accent:    #4af0a0;
+  --color-accent-dim:#1f6647;
+  --color-danger:    #f05a4a;
+  --color-text:      #d4dbe8;
+  --color-muted:     #5a6278;
+
+  /* Typography */
+  --font-display: 'Rajdhani', sans-serif;
+  --font-mono:    'Share Tech Mono', monospace;
+
+  /* Misc */
+  --radius: 4px;
+  --transition: 180ms ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+
+  /* subtle scanline texture */
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+input, button {
+  font-family: inherit;
+}
