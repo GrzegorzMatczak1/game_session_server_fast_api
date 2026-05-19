@@ -1,13 +1,16 @@
 import { useState } from 'react'
 import './Home.css'
 import Status from './Status'
+import { useNavigate } from 'react-router-dom'
 
 function Home() {
   const [username, setUsername] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = () => {
     if (!username.trim()) return
-    // TODO: handle login / navigation
+  
+    navigate("/game", { state: {username: username} })
     console.log('Username submitted:', username)
   }
 
