@@ -1,0 +1,97 @@
+/* Main wrapper splits the round view into Center Content and Right Sidebar */
+.round-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Center column housing the enemy display and action toggle */
+.round-center-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 32px; /* Distinct gap separating image frame from the controls */
+  box-sizing: border-box;
+}
+
+/* Enemy Image Scaling Box */
+.enemy-image-wrapper {
+  width: 100%;
+  max-width: 420px; /* Prevents the image from becoming overwhelmingly large on wide monitors */
+  aspect-ratio: 4 / 3; /* Maintains standard presentation framing ratios */
+  display: flex;
+}
+
+.enemy-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #aaa;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.enemy-image-placeholder img {
+  width: 100%;
+  height: 100%;
+  
+  /* 'contain' preserves the original aspect ratio so squares stay square. 
+     Use 'fill' if you want it to violently stretch to fill the exact 4:3 box. */
+  object-fit: contain; 
+
+  /* CRITICAL FOR PIXEL ART: Prevents the browser from blurring pixels when scaling up */
+  image-rendering: pixelated;
+  image-rendering: crisp-edges; /* Fallback support for specific/older browsers */
+}
+
+/* Interaction Toggle Layout */
+.attack-control-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-layout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.toggle-label-text {
+  font-size: 1.25rem; /* Scaled up slightly for comfortable reading */
+  font-weight: 500;
+}
+
+/* Right Sidebar layout (Symmetric mirror to your left sidebar) */
+.enemy-sidebar {
+  padding: 48px;
+  width: 280px;
+  min-width: 250px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+   /* Padding on the left to separate from center content */
+  box-sizing: border-box;
+  border-left: 1px solid #ccc; /* Structural divider mirroring the left side */
+  overflow-y: auto;
+}
+
+.enemy-name-display {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-top: 5px;
+}

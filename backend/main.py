@@ -141,6 +141,7 @@ class Match_Handler:
         if(self.current_player.mana >= 2):
             self.current_player.Player_current_hp += 1
             self.current_player.player_base_hp += 1
+            self.current_player.mana -= 2
             return "Player health succesfuly upgraded"
         
         return "Not enough mana!"
@@ -148,6 +149,7 @@ class Match_Handler:
     def upgrade_attack(self):
         if(self.current_player.mana >= 3):
             self.current_player.player_attack += 1
+            self.current_player.mana -= 3
             return "Player attack succesfuly upgraded"
     
         return "Not enough mana!"
