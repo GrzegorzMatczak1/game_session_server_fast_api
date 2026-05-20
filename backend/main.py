@@ -192,6 +192,10 @@ async def app_add_enemy(enemy: Enemy):
     match_handle_object.add_enemy(enemy)
     return enemy
 
+@app.get("/enemy/get")
+async def app_get_whole_enemy():
+    return match_handle_object.current_enemy.model_dump()
+
 @app.get("/enemy/getall")
 async def app_get_all_enemies():
     enemy_dump_list = []
@@ -250,16 +254,6 @@ async def app_round_progres():
     match_handle_object.update_player_health(5)
 
     return False #Match continues
-
-
-@app.get("/enemy/get")
-async def app_get_whole_enemy():
-    return match_handle_object.current_enemy.model_dump
-
-@app.get("/player/get")
-async def app_get_whole_player():
-    return match_handle_object.current_player.model_dump
-
 
 # proges turn(player_attacked: bool) / 1 apply player damage, 2 check if enemy can attack if yes attack the player, apply player mana and or regenerate hp
 
