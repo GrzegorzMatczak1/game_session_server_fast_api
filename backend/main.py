@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from models import Player, Enemy, Match
 from typing import List
 import json
+import random
 
 app = FastAPI()
 
@@ -16,9 +17,11 @@ app.add_middleware(
 class Match_Handler:
     def __init__(self):
         self.current_player: Player
-        self.enemy_list: List[Enemy] = []
-        self.enemy_id_list: List[int]
+        self.current_enemy: Enemy
         self.current_match: Match
+        self.turn: int
+        self.enemy_list: List[Enemy] = []
+        
 
     def add_player(self, new_player: Player):
         self.current_player = new_player
@@ -50,7 +53,6 @@ class Match_Handler:
             json.dump(temp_enemy_list, filee, indent=4)
 
         filee.close()
-
 
     def save_match_data(self):
         with open("json_files/match_info.json", "w") as filem:
@@ -109,6 +111,47 @@ class Match_Handler:
         except Exception as e:
             print(f"Error loading data: {e}")
 
+    def reset_player_stats(self):
+        self.current_player.Player_current_hp = 0
+        self.current_player.player_base_hp = 10
+        self.current_player.player_attack = 1
+        self.current_player.mana = 0
+
+    def generate_new_enemy(self):
+        self.current_enemy = self.enemy_list[random.randint(0, self.__sizeof__(self.enemy_list) - 1)]
+        self.current_match.enemy_id = self.current_enemy.enemy_id
+
+    def update_player_health(self, ammount):
+        self.current_player.Player_current_hp += ammount
+        if(self.current_player.Player_current_hp >= self.current_player.player_base_hp):
+            self.current_player.Player_current_hp = self.current_player.player_base_hp
+        
+
+    def handle_player_attack(self):
+        self.current_enemy.enemy_current_hp -= self.current_player.player_attack
+        if(self.current_enemy.enemy_current_hp <= 0):
+            return True
+    
+    def handle_enemy_attack(self):
+        self.current_player.Player_current_hp -= self.current_enemy.enemy_attack
+        if(self.current_player.Player_current_hp <= 0):
+            return True
+        
+    def upgrade_health(self):
+        if(self.current_player.mana >= 2):
+            self.current_player.Player_current_hp += 1
+            self.current_player.player_base_hp += 1
+            return "Player health succesfuly upgraded"
+        
+        return "Not enough mana!"
+
+    def upgrade_attack(self):
+        if(self.current_player.mana >= 3):
+            self.current_player.player_attack += 1
+            return "Player attack succesfuly upgraded"
+    
+        return "Not enough mana!"
+        
 #set up Match_Handler object
 match_handle_object = Match_Handler()
 match_handle_object.load_data()
@@ -148,3 +191,59 @@ async def app_add_match(match: Match):
 @app.post("/match/get")
 async def app_get_match():
     return match_handle_object.current_match.model_dump()
+
+# endpoints to do
+
+# progres round / generates new enemy, resets turns, saves game data, resets player save state when he lost
+
+@app.get("/round/progres")
+async def app_round_progres():
+
+    match_handle_object.turn = 0
+
+    if(match_handle_object.current_player.Player_current_hp <= 0):
+
+        match_handle_object.reset_player_stats()
+        match_handle_object.generate_new_enemy()
+        match_handle_object.current_match.current_round = 0
+        match_handle_object.save_all_data()
+
+        return "Player hp below 0. Reseting all"
+    
+    match_handle_object.current_match.current_round += 1
+    match_handle_object.generate_new_enemy()
+    match_handle_object.update_player_health(5)
+
+    return "Progressed to the next round"
+
+
+
+
+
+# proges turn(player_attacked: bool) / 1 apply player damage, 2 check if enemy can attack if yes attack the player, apply player mana and or regenerate hp
+
+@app.post("/turn/progres")
+async def app_turn_progres(player_attacked: bool):
+    if(player_attacked):
+        if(match_handle_object.handle_player_attack()):
+            return app_round_progres()
+    if(match_handle_object.turn % 5 == 0):
+        if(match_handle_object.handle_enemy_attack()):
+            return app_round_progres()
+    
+    match_handle_object.current_player.mana += 1
+    match_handle_object.current_player.Player_current_hp += 1
+    match_handle_object.turn += 1
+
+
+
+# upgrade player stats(stat_index: int) / stat_index = 1 -> hp++ && current_hp++, stat_index = 2 -> attack++ / player chose to upgrade these stats
+
+@app.post("/player/upgrade")
+async def app_upgrade_player_stats(stat_index: int):
+    if(stat_index == 1):
+        return match_handle_object.upgrade_health()
+    if(stat_index == 2):
+        return match_handle_object.upgrade_attack()
+    else:
+        return "Error: incorrect value given"
