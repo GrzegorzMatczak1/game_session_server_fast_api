@@ -117,6 +117,17 @@ class Match_Handler:
         self.current_player.player_attack = 1
         self.current_player.mana = 0
 
+    def reset_match_data(self):
+        self.current_match.current_round = 0
+        self.generate_new_enemy()
+        self.reset_player_stats()
+
+    def verify_reset_username(self, given_username: str):
+        temp_name = self.current_player.username
+        return temp_name == given_username
+            
+
+
     def generate_new_enemy(self):
         self.current_enemy = self.enemy_list[random.randint(0, self.__sizeof__(self.enemy_list) - 1)]
         self.current_match.enemy_id = self.current_enemy.enemy_id
@@ -125,22 +136,24 @@ class Match_Handler:
         self.current_player.Player_current_hp += ammount
         if(self.current_player.Player_current_hp >= self.current_player.player_base_hp):
             self.current_player.Player_current_hp = self.current_player.player_base_hp
-        
 
     def handle_player_attack(self):
         self.current_enemy.enemy_current_hp -= self.current_player.player_attack
         if(self.current_enemy.enemy_current_hp <= 0):
             return True
+        return False
     
     def handle_enemy_attack(self):
         self.current_player.Player_current_hp -= self.current_enemy.enemy_attack
         if(self.current_player.Player_current_hp <= 0):
             return True
+        return False
         
     def upgrade_health(self):
         if(self.current_player.mana >= 2):
             self.current_player.Player_current_hp += 1
             self.current_player.player_base_hp += 1
+            self.current_player.mana -= 2
             return "Player health succesfuly upgraded"
         
         return "Not enough mana!"
@@ -148,10 +161,13 @@ class Match_Handler:
     def upgrade_attack(self):
         if(self.current_player.mana >= 3):
             self.current_player.player_attack += 1
+            self.current_player.mana -= 3
             return "Player attack succesfuly upgraded"
     
         return "Not enough mana!"
         
+
+
 #set up Match_Handler object
 match_handle_object = Match_Handler()
 match_handle_object.load_data()
@@ -192,9 +208,28 @@ async def app_add_match(match: Match):
 async def app_get_match():
     return match_handle_object.current_match.model_dump()
 
+
 # endpoints to do
 
+# start match
+@app.post("/match/start")
+async def app_start_match(logged_username: str):
+
+    match_handle_object.load_data()
+
+    if not match_handle_object.verify_reset_username(logged_username):
+            match_handle_object.reset_match_data()
+            match_handle_object.reset_player_stats()
+            match_handle_object.current_player.username = logged_username
+            match_handle_object.save_all_data()
+    
+    return match_handle_object.current_player.model_dump
 # progres round / generates new enemy, resets turns, saves game data, resets player save state when he lost
+
+@app.get("/match/save")
+async def app_match_save():
+    match_handle_object.save_all_data()
+    return "Saved!"
 
 @app.get("/round/progres")
 async def app_round_progres():
@@ -208,16 +243,22 @@ async def app_round_progres():
         match_handle_object.current_match.current_round = 0
         match_handle_object.save_all_data()
 
-        return "Player hp below 0. Reseting all"
+        return True #Has ended
     
     match_handle_object.current_match.current_round += 1
     match_handle_object.generate_new_enemy()
     match_handle_object.update_player_health(5)
 
-    return "Progressed to the next round"
+    return False #Match continues
 
 
+@app.get("/enemy/get")
+async def app_get_whole_enemy():
+    return match_handle_object.current_enemy.model_dump
 
+@app.get("/player/get")
+async def app_get_whole_player():
+    return match_handle_object.current_player.model_dump
 
 
 # proges turn(player_attacked: bool) / 1 apply player damage, 2 check if enemy can attack if yes attack the player, apply player mana and or regenerate hp
@@ -232,8 +273,10 @@ async def app_turn_progres(player_attacked: bool):
             return app_round_progres()
     
     match_handle_object.current_player.mana += 1
-    match_handle_object.current_player.Player_current_hp += 1
+    match_handle_object.update_player_health(1)
     match_handle_object.turn += 1
+    return False #Match continues
+
 
 
 
@@ -246,4 +289,4 @@ async def app_upgrade_player_stats(stat_index: int):
     if(stat_index == 2):
         return match_handle_object.upgrade_attack()
     else:
-        return "Error: incorrect value given"
+        return False
