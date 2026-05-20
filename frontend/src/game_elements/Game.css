@@ -1,0 +1,80 @@
+/* Container takes up the full viewport */
+.game-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Sidebar takes a fixed width, lets content scroll if it overflows */
+.stats-sidebar {
+  width: 280px;
+  min-width: 250px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  border-right: 1px solid #ccc; /* Structural divider */
+  overflow-y: auto;
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Main content area splits into Round (top) and Actions (bottom) */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Round wrapper expands to take up all remaining vertical space */
+.round-wrapper {
+  flex: 1;
+  padding: 20px;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+/* Simple visual boundaries for your placeholder */
+.round-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #aaa;
+  border-radius: 8px;
+}
+
+/* Action bar sits at the very bottom */
+.action-bar {
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  justify-content: center; /* Centers your buttons horizontally */
+  align-items: center;
+  border-top: 1px solid #ccc; /* Structural divider */
+  box-sizing: border-box;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  min-width: 100px;
+  cursor: pointer;
+}
