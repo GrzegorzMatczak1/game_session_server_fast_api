@@ -1,30 +1,114 @@
 [
     {
+        "enemy_id": 0,
+        "enemy_name": "Goblin",
+        "enemy_base_hp": 5,
+        "enemy_current_hp": -10,
+        "enemy_attack": 1
+    },
+    {
         "enemy_id": 1,
-        "enemy_name": "Somalian",
-        "enemy_base_hp": 10,
-        "enemy_current_hp": 10,
-        "enemy_attack": 7
+        "enemy_name": "Wizard",
+        "enemy_base_hp": 1,
+        "enemy_current_hp": -14,
+        "enemy_attack": 20
     },
     {
         "enemy_id": 2,
-        "enemy_name": "Angry Ball",
-        "enemy_base_hp": 12,
-        "enemy_current_hp": 12,
-        "enemy_attack": 4
+        "enemy_name": "Ork",
+        "enemy_base_hp": 20,
+        "enemy_current_hp": -1,
+        "enemy_attack": 5
     },
     {
         "enemy_id": 3,
-        "enemy_name": "Slime w Bloku",
-        "enemy_base_hp": 11,
+        "enemy_name": "Elf",
+        "enemy_base_hp": 17,
+        "enemy_current_hp": -9,
+        "enemy_attack": 4
+    },
+    {
+        "enemy_id": 4,
+        "enemy_name": "Mimic",
+        "enemy_base_hp": 3,
+        "enemy_current_hp": -10,
+        "enemy_attack": 3
+    },
+    {
+        "enemy_id": 5,
+        "enemy_name": "Walter White",
+        "enemy_base_hp": 40,
+        "enemy_current_hp": -8,
+        "enemy_attack": 3
+    },
+    {
+        "enemy_id": 6,
+        "enemy_name": "Knight",
+        "enemy_base_hp": 25,
+        "enemy_current_hp": -1,
+        "enemy_attack": 3
+    },
+    {
+        "enemy_id": 7,
+        "enemy_name": "Lego Block",
+        "enemy_base_hp": 1,
+        "enemy_current_hp": 0,
+        "enemy_attack": 20
+    },
+    {
+        "enemy_id": 8,
+        "enemy_name": "Guy",
+        "enemy_base_hp": 10,
+        "enemy_current_hp": -3,
+        "enemy_attack": 1
+    },
+    {
+        "enemy_id": 9,
+        "enemy_name": "Impostor",
+        "enemy_base_hp": 20,
+        "enemy_current_hp": 0,
+        "enemy_attack": 8
+    },
+    {
+        "enemy_id": 10,
+        "enemy_name": "Dragon",
+        "enemy_base_hp": 50,
+        "enemy_current_hp": -2,
+        "enemy_attack": 6
+    },
+    {
+        "enemy_id": 11,
+        "enemy_name": "Tank",
+        "enemy_base_hp": 60,
+        "enemy_current_hp": -5,
+        "enemy_attack": 1
+    },
+    {
+        "enemy_id": 12,
+        "enemy_name": "Wolf",
+        "enemy_base_hp": 7,
+        "enemy_current_hp": 0,
+        "enemy_attack": 3
+    },
+    {
+        "enemy_id": 13,
+        "enemy_name": "Flail Weilder",
+        "enemy_base_hp": 12,
         "enemy_current_hp": 0,
         "enemy_attack": 5
     },
     {
-        "enemy_id": 4,
-        "enemy_name": "Czad(CO)",
-        "enemy_base_hp": 14,
-        "enemy_current_hp": 0,
+        "enemy_id": 14,
+        "enemy_name": "Dual Sword Weilder",
+        "enemy_base_hp": 6,
+        "enemy_current_hp": -7,
+        "enemy_attack": 7
+    },
+    {
+        "enemy_id": 15,
+        "enemy_name": "Monk",
+        "enemy_base_hp": 15,
+        "enemy_current_hp": 15,
         "enemy_attack": 3
     }
 ]

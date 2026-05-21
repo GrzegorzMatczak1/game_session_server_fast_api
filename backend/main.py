@@ -60,6 +60,8 @@ class Match_Handler:
         with open("json_files/player.json", "w") as filep:
             
             json.dump(self.current_player.model_dump(), filep, indent=4)
+        
+        print("Saved player data")
 
 
         with open("json_files/enemies.json", "w") as filee:
@@ -68,8 +70,14 @@ class Match_Handler:
             
             json.dump(enemy_list_temp, filee, indent=4)
 
+        print("Saved enemy data")
+
         with open("json_files/match_info.json", "w") as filem:
             json.dump(self.current_match.model_dump(), filem, indent=4)
+
+        print("Saved match data")
+
+        
 
     def load_data(self):
         try:
@@ -214,6 +222,7 @@ async def app_get_match():
 async def app_start_match(logged_username: str):
 
     match_handle_object.load_data()
+    match_handle_object.current_enemy.enemy_current_hp = match_handle_object.current_enemy.enemy_base_hp
 
     if not match_handle_object.verify_reset_username(logged_username):
             match_handle_object.reset_match_data()
@@ -246,6 +255,8 @@ async def app_round_progres():
     match_handle_object.current_match.current_round += 1
     match_handle_object.generate_new_enemy()
     match_handle_object.update_player_health(5)
+    match_handle_object.current_player.mana += 1
+    match_handle_object.save_all_data()
 
     return False #Match continues
 

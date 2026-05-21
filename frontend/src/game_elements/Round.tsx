@@ -1,8 +1,7 @@
 import "./Round.css"
-import img1 from "./visuals/somalijczyk.png"
-import img2 from "./visuals/wsciekla-kula.png"
-import img3 from "./visuals/slime-w-bloku.png"
-import img4 from "./visuals/czad.png"
+import img1 from "./visuals/1.png"
+import img2 from "./visuals/2.png"
+import img3 from "./visuals/3.png"
 import { useEffect, useState } from "react"
 
 
@@ -23,20 +22,30 @@ interface RoundProps {
 
 export default function Round({ enemy, willAttack, setWillAttack }: RoundProps) {
 
-    const [enemyImg, setEnemyImg] = useState<string>(img1)
+    const [enemyImgList, setEnemyImgList] = useState<string[]>(
+        [
+            img2,
+            img3,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+            img1,
+        ]
+    )
+    const [enemyImg, setEnemyImg] = useState<string>(enemyImgList[0])
 
     useEffect(() => {
-        if (enemy.enemy_id === 1) {
-        setEnemyImg(img1)
-        } else if (enemy.enemy_id === 2) {
-        setEnemyImg(img2)
-        } else if (enemy.enemy_id === 3) {
-        setEnemyImg(img3)
-        } else if (enemy.enemy_id === 4) {
-        setEnemyImg(img4)
-        } else {
-        setEnemyImg("")
-        }
+        setEnemyImg(enemyImgList[enemy.enemy_id])
     }, [enemy.enemy_id])
 
     return (
@@ -46,7 +55,7 @@ export default function Round({ enemy, willAttack, setWillAttack }: RoundProps) 
                 <div className="enemy-image-wrapper">
                     {/* Placeholder container for the enemy graphic */}
                     <div className="enemy-image-placeholder">
-                        <img src={enemyImg} />
+                        <img src={enemyImg} alt={enemy.enemy_name} />
                     </div>
                 </div>
 

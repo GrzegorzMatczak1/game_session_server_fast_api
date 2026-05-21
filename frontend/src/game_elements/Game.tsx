@@ -27,6 +27,7 @@ export default function Game() {
     const username: string = location.state?.username ?? location.state
     const [isAlive, setIsAlive] = useState<boolean>(true)
     const [showGameOver, setShowGameOver] = useState(false)
+    const [isCodeBuffering, setIsCodeBuffering] = useState(false)
     const [currentRound, setCurrentRound] = useState<number>(1)
 
     const [willAttack, setWillAttack] = useState<boolean>(false)
@@ -131,13 +132,15 @@ export default function Game() {
     }
 
     const handleNextTurn = async () => {
+        setIsCodeBuffering(true)
         const response = await fetch(`http://localhost:8000/turn/progres?player_attacked=${Boolean(willAttack)}`, { method: "POST" })
         const hasEnded: boolean = await response.json()
-
+        
         await getPlayerData()
         await getEnemyData()
         await getCurrentRound()
 
+        setIsCodeBuffering(false)
         if (hasEnded) {
             setIsAlive(false) // this triggers showGameOver via useEffect
         }
@@ -153,6 +156,9 @@ export default function Game() {
 
         const init = async () => {
             await startMatch()
+            await getPlayerData()
+            await getEnemyData()
+            await getCurrentRound()
         }
 
         init()
