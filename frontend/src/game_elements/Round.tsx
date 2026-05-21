@@ -1,13 +1,18 @@
 import "./Round.css"
-import img from "./visuals/example-enemy.png"
+import img1 from "./visuals/somalijczyk.png"
+import img2 from "./visuals/wsciekla-kula.png"
+import img3 from "./visuals/slime-w-bloku.png"
+import img4 from "./visuals/czad.png"
+import { useEffect, useState } from "react"
+
 
 // Reusing your Enemy interface structure for strict typing
 interface Enemy {
-    enemyId: number
-    name: string
-    maxHp: number
-    currentHp: number
-    atk: number
+  enemy_id: number;
+  enemy_name: string;
+  enemy_base_hp: number;
+  enemy_current_hp: number;
+  enemy_attack: number;
 }
 
 interface RoundProps {
@@ -18,6 +23,22 @@ interface RoundProps {
 
 export default function Round({ enemy, willAttack, setWillAttack }: RoundProps) {
 
+    const [enemyImg, setEnemyImg] = useState<string>(img1)
+
+    useEffect(() => {
+        if (enemy.enemy_id === 1) {
+        setEnemyImg(img1)
+        } else if (enemy.enemy_id === 2) {
+        setEnemyImg(img2)
+        } else if (enemy.enemy_id === 3) {
+        setEnemyImg(img3)
+        } else if (enemy.enemy_id === 4) {
+        setEnemyImg(img4)
+        } else {
+        setEnemyImg("")
+        }
+    }, [enemy.enemy_id])
+
     return (
         <div className="round-container">
             {/* CENTER MAIN CONTENT: IMAGE & INTERACTION */}
@@ -25,7 +46,7 @@ export default function Round({ enemy, willAttack, setWillAttack }: RoundProps) 
                 <div className="enemy-image-wrapper">
                     {/* Placeholder container for the enemy graphic */}
                     <div className="enemy-image-placeholder">
-                        <img src={img} />
+                        <img src={enemyImg} />
                     </div>
                 </div>
 
@@ -49,19 +70,20 @@ export default function Round({ enemy, willAttack, setWillAttack }: RoundProps) 
                 <hr className="sidebar-divider" />
                 
                 <div className="enemy-name-display">
-                    {enemy.name || "Unknown Foe"}
+                    {enemy.enemy_name || "Unknown Foe"}
                 </div>
 
                 {/* Reusing your structural list classes from Game.css */}
                 <div className="stats-list">
                     <div className="stat-item">
                         <span className="stat-label">Health:</span>
-                        <span className="stat-value">{enemy.currentHp}/{enemy.maxHp}</span>
+                        <span className="stat-value">{enemy.enemy_current_hp}/{enemy.enemy_base_hp}</span>
                     </div>
                     <div className="stat-item">
                         <span className="stat-label">Attack:</span>
-                        <span className="stat-value">{enemy.atk}</span>
+                        <span className="stat-value">{enemy.enemy_attack}</span>
                     </div>
+                    <p>{"(every 5 turns enemy attacks)"}</p>
                 </div>
             </aside>
         </div>

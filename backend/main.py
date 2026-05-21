@@ -19,7 +19,7 @@ class Match_Handler:
         self.current_player: Player
         self.current_enemy: Enemy
         self.current_match: Match
-        self.turn: int
+        self.turn: int = 1
         self.enemy_list: List[Enemy] = []
         
 
@@ -40,8 +40,6 @@ class Match_Handler:
             
             json.dump(self.current_player.model_dump(), filep, indent=4)
 
-        filep.close()
-    
     def save_enemy_data(self):
         temp_enemy_list = []
 
@@ -52,22 +50,17 @@ class Match_Handler:
             
             json.dump(temp_enemy_list, filee, indent=4)
 
-        filee.close()
-
     def save_match_data(self):
         with open("json_files/match_info.json", "w") as filem:
             json.dump(self.current_match.model_dump(), filem, indent=4)
-
-        filem.close()
     
     def save_all_data(self):
         enemy_list_temp = []
 
         with open("json_files/player.json", "w") as filep:
             
-            json.dump(self.current_player, filep, indent=4)
+            json.dump(self.current_player.model_dump(), filep, indent=4)
 
-        filep.close()
 
         with open("json_files/enemies.json", "w") as filee:
             for e in self.enemy_list:
@@ -75,12 +68,8 @@ class Match_Handler:
             
             json.dump(enemy_list_temp, filee, indent=4)
 
-        filee.close()
-
         with open("json_files/match_info.json", "w") as filem:
             json.dump(self.current_match.model_dump(), filem, indent=4)
-
-        filem.close()
 
     def load_data(self):
         try:
@@ -89,36 +78,36 @@ class Match_Handler:
                 player = Player(**player_content)
                 self.current_player = player
 
-            filep.close()
-
             with open("json_files/enemies.json", "r") as filee:
                 enemy_content = json.load(filee)
-
+                self.enemy_list = []
                 for enemy_data in enemy_content:
                     enemy = Enemy(**enemy_data)
                     self.enemy_list.append(enemy)
-            
-            filee.close()
 
             with open("json_files/match_info.json", "r") as filem:
                 match_content = json.load(filem)
                 match = Match(**match_content)
                 self.current_match = match
 
-            filem.close()
+            self.current_enemy = next(
+                (e for e in self.enemy_list if e.enemy_id == self.current_match.enemy_id),
+                self.enemy_list[0]
+            )
+
         except FileNotFoundError:
             print("Certain files werent found!")
         except Exception as e:
             print(f"Error loading data: {e}")
 
     def reset_player_stats(self):
-        self.current_player.Player_current_hp = 0
+        self.current_player.Player_current_hp = 10
         self.current_player.player_base_hp = 10
         self.current_player.player_attack = 1
         self.current_player.mana = 0
 
     def reset_match_data(self):
-        self.current_match.current_round = 0
+        self.current_match.current_round = 1
         self.generate_new_enemy()
         self.reset_player_stats()
 
@@ -129,7 +118,8 @@ class Match_Handler:
 
 
     def generate_new_enemy(self):
-        self.current_enemy = self.enemy_list[random.randint(0, self.__sizeof__(self.enemy_list) - 1)]
+        self.current_enemy = self.enemy_list[random.randint(0, len(self.enemy_list) - 1)]
+        self.current_enemy.enemy_current_hp = self.current_enemy.enemy_base_hp
         self.current_match.enemy_id = self.current_enemy.enemy_id
 
     def update_player_health(self, ammount):
@@ -176,6 +166,10 @@ match_handle_object.load_data()
 @app.get("/api/health")
 def health():
     return {"status": "ok", "message": "Backend is running"}
+
+@app.get("/round/get")
+async def app_get_current_round():
+    return match_handle_object.current_match.current_round
 
 #these are test endpoints. They are used to check the fast api app connection with the json database
 @app.post("/player/add")
@@ -227,7 +221,7 @@ async def app_start_match(logged_username: str):
             match_handle_object.current_player.username = logged_username
             match_handle_object.save_all_data()
     
-    return match_handle_object.current_player.model_dump
+    return match_handle_object.current_player.model_dump()
 # progres round / generates new enemy, resets turns, saves game data, resets player save state when he lost
 
 @app.get("/match/save")
@@ -244,7 +238,7 @@ async def app_round_progres():
 
         match_handle_object.reset_player_stats()
         match_handle_object.generate_new_enemy()
-        match_handle_object.current_match.current_round = 0
+        match_handle_object.current_match.current_round = 1
         match_handle_object.save_all_data()
 
         return True #Has ended
@@ -259,16 +253,18 @@ async def app_round_progres():
 
 @app.post("/turn/progres")
 async def app_turn_progres(player_attacked: bool):
+    match_handle_object.turn += 1
     if(player_attacked):
         if(match_handle_object.handle_player_attack()):
-            return app_round_progres()
+            return await app_round_progres()
     if(match_handle_object.turn % 5 == 0):
         if(match_handle_object.handle_enemy_attack()):
-            return app_round_progres()
+            return await app_round_progres()
+    else:
+        match_handle_object.update_player_health(1)
     
     match_handle_object.current_player.mana += 1
-    match_handle_object.update_player_health(1)
-    match_handle_object.turn += 1
+    
     return False #Match continues
 
 

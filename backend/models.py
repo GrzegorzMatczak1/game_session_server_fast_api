@@ -10,7 +10,7 @@ class Player(BaseModel):
     player_id: int
     username: str 
     player_base_hp: int = 10
-    Player_current_hp: int = 0
+    Player_current_hp: int = 10
     player_attack: int = 1
     mana: int = 0
 
@@ -18,7 +18,7 @@ class Enemy(BaseModel):
     enemy_id: int = 0
     enemy_name: str
     enemy_base_hp: int = 10
-    enemy_current_hp: int = 0
+    enemy_current_hp: int = 10
     enemy_attack: int = 1
 
 class Match(BaseModel):
