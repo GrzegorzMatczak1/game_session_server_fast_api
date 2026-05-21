@@ -1,158 +1,152 @@
-# Game Session Server — Preliminary Design Document
+# Game Session Server
 
 ## 1. Concept Overview
 
-A real-time, round-based **single-player** game where one player fights waves of enemies and increasingly tough bosses. The game runs entirely through a FastAPI backend; state is persisted in a JSON file. A separate dashboard app (Typescript React web client display) visualises live stats.
+A round-based **single-player** game where one player fights waves of enemies. The game runs through a FastAPI backend with state persisted in JSON files. A Vite React TypeScript frontend visualises live stats and handles all player interaction.
 
 ---
 
 ## 2. Core Game Loop
 
 ```
-[Match starts]
+[Match starts — username entered]
     │
     ▼
 Every turn:
   ├─ Player gains +1 mana
-  └─ Player regenerates +1 HP  (unless regen is paused — see §4)
+  └─ Player regenerates +1 HP
     │
     ▼
 Every 5 turns:
-  ├─ Player may attack the current enemy  (costs mana)
-  └─ Current enemy auto-attacks the player
+  └─ Enemy auto-attacks the player
     │
     ▼
-Kill an enemy → round += 1
-  ├─ round % 10 == 0 → spawn Boss (see §5)
-  └─ otherwise       → continue
+Player chooses each turn:
+  ├─ Attack the current enemy (free — no mana cost)
+  └─ Spend mana on stat upgrades (Health or Attack)
     │
     ▼
-HP <= 0 → Game Over for that player
+Kill an enemy → round += 1, new enemy spawns, player heals +5 HP
+    │
+    ▼
+HP <= 0 → Game Over
 ```
 
 ---
 
 ## 3. Characters
 
-Each character has the following base stats stored in the database:
+### Player
 
 | Stat | Field | Default |
 |------|-------|---------|
-| Hit Points | `hp` | TBD |
-| Attack | `attack` | TBD |
-| (future stats) | … | … |
+| Base HP | `player_base_hp` | 10 |
+| Current HP | `Player_current_hp` | 10 |
+| Attack | `player_attack` | 1 |
+| Mana | `mana` | 0 |
 
-Characters are created and deleted via the API (see §6). Stats can be upgraded during a match using mana.
+### Enemy
 
----
+| Stat | Field |
+|------|-------|
+| Name | `enemy_name` |
+| Base HP | `enemy_base_hp` |
+| Current HP | `enemy_current_hp` |
+| Attack | `enemy_attack` |
 
-## 4. Mana & Combat
-
-### Mana
-- The player accumulates **+1 mana per turn** automatically.
-- Mana is spent on two actions:
-
-| Action | Effect |
-|--------|--------|
-| Attack | Deal damage to the **current enemy** |
-| Upgrade stat | Increase one stat by 1 (see `update_stats` in §6) |
-
-### HP Regeneration & Regen Pause
-- Base regen: **+1 HP per turn**.
-- After **receiving** damage → player's regen is paused for **1 turns**.
-- After **dealing** damage → player's regen is paused for **2 turns**.
-
-### Attack Timing
-- Both the player and the enemy can only attack **once every 1 turns**.
-- The player can attack anytime (attack costs mana); the enemy's attack is automatic.
+Enemies are picked randomly from the enemy list at the start of each round. Stats are not scaled by round number.
 
 ---
 
-## 1. Rounds & Boss Encounters
+## 4. Mana & Upgrades
 
-- The **round counter** increments by 1 each time an enemy is killed.
-- When `round % 10 == 0` → a **Boss** spawns.
-- Boss and enemy stat scaling:
+The player accumulates **+1 mana per turn** automatically. Mana is spent on stat upgrades only — attacking costs no mana.
 
-```
-enemy_stat = base_stat * (1 + 0.1 * current_round)
-```
-
-- Enemies attack autonomously; they do not require any input.
-
-### State Saved Between Rounds
-
-After each round (enemy killed), the following game state is persisted to the database so progress is not lost:
-
-| Field | Description |
-|-------|-------------|
-| `hp` | Player's current HP carried into the next round |
-| `attack` | Player's current attack stat |
-| `current_round` | Round number used to scale the next enemy |
-| `current_enemy` | Stats of the next enemy to be spawned (pre-calculated) |
-
-This means the player keeps any HP and stat upgrades accumulated so far — there is no reset between rounds.
+| Action | Mana Cost | Effect |
+|--------|-----------|--------|
+| Upgrade Health | 2 | `player_base_hp + 1`, `Player_current_hp + 1` |
+| Upgrade Attack | 3 | `player_attack + 1` |
 
 ---
 
-## 6. Data Management
+## 5. Combat
 
-All game data will be saved and read from **JSON** architecture. The data will be split into:
-
- - enemy.json: Data related to enemies and their stats(hp, dmg)
- - player.json: Data related to the player. Stores only base stats for the player(hp, dmg, mana)
- - round.json: Data related to the current round information. Base entity stats from other files are modified by the multipliers based on the current round.
+- The **player** can choose to attack once per turn (toggled before confirming the turn). Attack is free.
+- The **enemy** auto-attacks the player every **5 turns**.
+- HP regeneration is **+1 per turn**, unless the enemy attacks that turn.
+- On killing an enemy, the player heals **+5 HP** (capped at base HP) and a new enemy spawns.
 
 ---
 
-## 7. API Endpoints
+## 6. Session & Username System
 
-All endpoints are served by the **Game Session Server** (FastAPI).
+- On the Home screen the player enters a username to start.
+- On match start, the backend checks if the saved username matches. If it does, the existing save is resumed. If not, all stats and round progress are reset and the new username is saved.
+- This means only one save slot exists at a time — entering a different username wipes the previous session.
 
-### Match Management
+---
+
+## 7. Data Persistence
+
+All game state is stored in three JSON files under `json_files/`:
+
+| File | Contents |
+|------|----------|
+| `player.json` | Current player stats and username |
+| `enemies.json` | Full enemy list with base and current stats |
+| `match_info.json` | Current round number and active enemy ID |
+
+State is saved after every round progression and on match start.
+
+---
+
+## 8. API Endpoints
+
+All endpoints are served by the FastAPI backend (`main.py`).
+
+### Match
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/startMatch` | Initialise a new match session, reset round counter, spawn initial enemies. **Async.** |
-| `POST` | `/updateMatch` | Process a single turn — awards mana, applies regen, triggers attacks on every 5th turn, and saves state. **Async.** |
+| `POST` | `/match/start?logged_username=` | Load save data; reset everything if username differs |
+| `GET` | `/match/save` | Manually persist all state to JSON |
 
-### Character Management
+### Turn & Round
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/createCharacter` | Create a new character with default stats and persist to DB. |
-| `DELETE` | `/deleteCharacter` | Remove a character from the DB. |
-| `PATCH` | `/updateCharacterStats` | Update a specific stat by a given integer amount. **Async.** |
+| `POST` | `/turn/progres?player_attacked=` | Advance one turn; apply attack, enemy attack (every 5), mana and HP regen |
+| `GET` | `/round/progres` | Called internally on enemy death or player death; increments round or resets match |
+| `GET` | `/round/get` | Returns current round number |
 
-#### `updateCharacterStats` — stat index convention (preliminary)
+### Player
 
-| Value passed | Stat affected |
-|---|---|
-| `1` | HP +1 |
-| `2` | Attack +1 |
-| `3` | Mana +1 |
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/player/get/` | Returns current player state |
+| `POST` | `/player/add` | Add / overwrite player data |
+| `POST` | `/player/upgrade?stat_index=` | `1` = upgrade health (costs 2 mana), `2` = upgrade attack (costs 3 mana) |
 
-> **Note:** The exact request/response schemas (field names, auth, validation rules) are to be defined in the next iteration.
+### Enemy
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/enemy/get` | Returns the current active enemy |
+| `GET` | `/enemy/getall` | Returns the full enemy list |
+| `POST` | `/enemy/add` | Add an enemy to the list |
+
+### Health Check
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/health` | Returns backend status |
 
 ---
 
-## 8. Data Persistence
+## 9. Frontend
 
-- All game state is saved in **JSON format** to the database after defeaating an enemy.
-- The fields persisted between rounds are: `hp`, `attack`, `current_round`, and `current_enemy` (see §5).
-- On Game Over (`hp <= 0`), the final state snapshot is preserved for the dashboard to read.
+Built with **Vite + React + TypeScript**.
 
----
+**Home screen (`Home.tsx`):** Username input. Navigates to `/game` with the username passed via router state.
 
-## 9. Game Session Dashboard
-
-A companion app that reads from the database and connects with FastAPI that visualises:
-
-- Live player stats (HP, mana, attack)
-- Round number & boss status
-- Kill feed / event log
-- Player interface to interract with the game
-
-### Implementation: **Vite React Typescript** front-end client for game logic visualisation and user interraction implementation.
-
-
+**Game screen (`Game.tsx`):** Displays live player stats (HP, attack, mana), current round, and the active enemy via the `Round` component. Action bar exposes upgrade buttons (disabled when mana is insufficient) and the Next Turn button with the attack toggle.

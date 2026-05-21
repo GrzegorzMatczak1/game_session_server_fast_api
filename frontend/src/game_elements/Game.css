@@ -33,6 +33,26 @@
   align-items: center;
 }
 
+/* Sidebar Layout Adjustments */
+.sidebar-divider {
+  width: 100%;
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 15px 0;
+  box-sizing: border-box;
+}
+
+.round-display {
+  font-size: 1.6rem; /* Large text scaling */
+  font-weight: bold;
+  white-space: nowrap; /* Ensures the number never wraps to a new line */
+  margin-bottom: 20px;
+}
+
+.stats-sidebar h3 {
+  margin: 10px 0;
+}
+
 /* Main content area splits into Round (top) and Actions (bottom) */
 .main-content {
   flex: 1;
@@ -64,9 +84,9 @@
 
 /* Action bar sits at the very bottom */
 .action-bar {
-  padding: 20px;
+  padding: 40px;
   display: flex;
-  gap: 16px;
+  gap: 96px;
   justify-content: center; /* Centers your buttons horizontally */
   align-items: center;
   border-top: 1px solid #ccc; /* Structural divider */
@@ -77,4 +97,20 @@
   padding: 10px 20px;
   min-width: 100px;
   cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-icon {
+  width: 24px;   /* Match standard button text height proportions */
+  height: 24px;
+  flex-shrink: 0; /* Guarantees the arrow won't distort if button shrinks */
+}
+
+.important {
+  background-color: #e43b3b;
+  color: white;
 }

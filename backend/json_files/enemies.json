@@ -1,23 +1,30 @@
 [
     {
-        "enemy_id": 0,
-        "enemy_name": "test",
-        "enemy_base_hp": 10,
-        "enemy_current_hp": 0,
-        "enemy_attack": 1
-    },
-    {
         "enemy_id": 1,
-        "enemy_name": "test2",
+        "enemy_name": "Somalian",
         "enemy_base_hp": 10,
-        "enemy_current_hp": 0,
-        "enemy_attack": 1
+        "enemy_current_hp": 10,
+        "enemy_attack": 7
     },
     {
         "enemy_id": 2,
-        "enemy_name": "string",
-        "enemy_base_hp": 10,
+        "enemy_name": "Angry Ball",
+        "enemy_base_hp": 12,
+        "enemy_current_hp": 12,
+        "enemy_attack": 4
+    },
+    {
+        "enemy_id": 3,
+        "enemy_name": "Slime w Bloku",
+        "enemy_base_hp": 11,
         "enemy_current_hp": 0,
-        "enemy_attack": 1
+        "enemy_attack": 5
+    },
+    {
+        "enemy_id": 4,
+        "enemy_name": "Czad(CO)",
+        "enemy_base_hp": 14,
+        "enemy_current_hp": 0,
+        "enemy_attack": 3
     }
 ]
