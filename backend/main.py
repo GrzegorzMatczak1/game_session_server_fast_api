@@ -131,6 +131,7 @@ class Match_Handler:
     def generate_new_enemy(self):
         self.current_enemy = self.enemy_list[random.randint(0, self.__sizeof__(self.enemy_list) - 1)]
         self.current_match.enemy_id = self.current_enemy.enemy_id
+        self.current_enemy.enemy_current_hp = self.current_enemy.enemy_base_hp
 
     def update_player_health(self, ammount):
         self.current_player.Player_current_hp += ammount
